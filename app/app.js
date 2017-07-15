@@ -3,14 +3,20 @@
 const modules = [
   require('./Modules/sink'),
   require('./Modules/repository'),
-  require('./Modules/services')
+  require('./Modules/services'),
+  require('./Modules/streamer'),
+  require('./Modules/publisher'),
+  require('./Modules/subscriber')
 ];
 
 const {CompositionManager} = require('app-compositor');
 const app = new CompositionManager();
 
-app.runModules(modules).done(async function ({services}) {
-
+app.runModules(modules).done(async function ({streamer, subscriber, services}) {
+  streamer.start();
+  subscriber.queue('eventLogger').bind('*.*').listen(function ({ event, commit }) {
+    console.log(('* %s.%s: %j', commit.aggregaeType, event.Type, event.eventPayload));
+  })
   // const User = require('./Entities/User');
   const registerUser = services.service('registerUser');
 
