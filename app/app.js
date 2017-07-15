@@ -6,7 +6,9 @@ const modules = [
   require('./Modules/services'),
   require('./Modules/streamer'),
   require('./Modules/publisher'),
-  require('./Modules/subscriber')
+  require('./Modules/subscriber'),
+  require('./Modules/projectionDB'),
+  require('./Modules/projectionBuilder')
 ];
 
 const {CompositionManager} = require('app-compositor');
@@ -15,7 +17,7 @@ const app = new CompositionManager();
 app.runModules(modules).done(async function ({streamer, subscriber, services}) {
   streamer.start();
   subscriber.queue('eventLogger').bind('*.*').listen(function ({ event, commit }) {
-    console.log(('* %s.%s: %j', commit.aggregaeType, event.Type, event.eventPayload));
+    console.log('* %s.%s: %j', commit.aggregateType, event.eventType, event.eventPayload);
   })
   // const User = require('./Entities/User');
   const registerUser = services.service('registerUser');
